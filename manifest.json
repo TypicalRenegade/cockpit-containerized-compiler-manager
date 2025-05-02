@@ -1,0 +1,9 @@
+{
+    "version": 0,
+    "tools": {
+        "manager": {
+            "label": "Compiler Manager",
+            "path:": "manager.html"
+        }
+    }
+}
