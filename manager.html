@@ -3,14 +3,25 @@
   <head>
     <meta charset="utf-8">
     <title>Compiling Container Manager</title>
-    <script src="manager.js"></script>
+    <link href="manager.css" type="text/css" rel="stylesheet">
+    <script src="../base1/cockpit.js"></script>
+    <script type="module" src="manager.js"></script>
   </head>
   <body>
     <main tabindex="-1">
       <section>
         <div>
           <div>
-            <label>Rust</label>
+            <label>Veloren</label>
+            <div>
+              <label for="state">State:</label>
+              <span is="state"></span></p>
+            </div>
+            <div>
+              <!-- Do I want to have an option of what to do? (e.g. fetch or clone program source, build, build for windows or linux) -->
+              <button id="run" disabled>Start</button>
+            </div>
+            <pre id="output"></pre>
           </div>
           <div>
             <label>Godot Game Engine</label>
