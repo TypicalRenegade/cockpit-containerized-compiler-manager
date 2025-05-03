@@ -1,2 +1,4 @@
 # cockpit-containerized-compiler-manager
-A module for Houston UI (Cockpit) to manage compiling programs in containers. Compiling progress can be monitored. Compiled programs versions can be viewed and downloaded.
+No part of this project works at the moment.
+
+The goal of this project is to have a module for Houston UI (Cockpit) to manage and monitor compiling programs in containers.Compiled programs versions can be viewed and downloaded.
