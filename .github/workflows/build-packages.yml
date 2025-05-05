@@ -4,7 +4,7 @@ on:
     branches:
       - build
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*.*'
 jobs:
   main:
     runs-on: "fedora-latest" # self-hosted
