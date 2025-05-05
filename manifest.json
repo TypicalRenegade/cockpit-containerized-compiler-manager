@@ -1,5 +1,6 @@
 {
-    "version": 0,
+    "version": "0.0.1",
+    "buildVersion": "1",
     "tools": {
         "manager": {
             "label": "Compiler Manager",
