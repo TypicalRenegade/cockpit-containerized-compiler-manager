@@ -5,6 +5,13 @@ on:
       - master
     #tags:
      # - 'v*.*.*.*'
+    workflow_dispatch:
+        inputs:
+            make-rpm:
+                description: "Make a RPM Package"
+                required: " false"
+                type: boolean
+                default: true
 jobs:
   main:
     runs-on: "ubuntu-latest" # self-hosted
