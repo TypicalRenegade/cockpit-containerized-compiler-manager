@@ -1,18 +1,18 @@
-Name: ::package_name::
-Version: ::package_version::
-Release: ::package_build_version::%{dist}
-Summary: ::package_description_short::
-License: ::package_licence::
-URL: ::package_url::
+Name: Cockpit Compiler Manager
+Version: v0.0.1
+Release: 0.0.1%{dist}
+Summary: Module for Cockpit to be used to compile programs in containers and monitor the progress.
+License: MIT
+URL: https://github.com/TypicalRenegade/cockpit-containerized-compiler-manager
 Source0: %{name}-%{version}.tar.gz
-BuildArch: ::package_architecture_el::
-Requires: ::package_dependencies_el_generic::
+BuildArch: noarch
+Requires: cockpit
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
-::package_title::
-::package_description_long::
+Cockpit Compiler Manager
+MOdule for cockpit to manage compiling programs using containers.
 
 %prep
 %setup -q
