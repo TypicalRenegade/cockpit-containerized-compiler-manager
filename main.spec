@@ -18,7 +18,7 @@ MOdule for cockpit to manage compiling programs using containers.
 %setup -q
 
 %build
-make OS_PACKAGE_RELEASE=el8
+make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
