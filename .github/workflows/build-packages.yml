@@ -7,7 +7,7 @@ on:
       - 'v*.*.*'
 jobs:
   main:
-    runs-on: self-hosted
+    runs-on: "fedora-latest" # self-hosted
     permissions:
       contents: write
       packages: write
