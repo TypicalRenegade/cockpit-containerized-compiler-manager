@@ -26,6 +26,6 @@ make DESTDIR=%{buildroot} install
 %files
 %license LICENSE
 %{_bindir}/%{name}
-#/usr/share/cockpit/compiler_manager/*
+
 
 %changelog
