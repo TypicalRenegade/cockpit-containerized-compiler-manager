@@ -1,4 +1,4 @@
-Name: Cockpit Compiler Manager
+Name: cockpit_compiler_manager
 Version: v0.0.1
 Release: 0.0.1%{dist}
 Summary: Module for Cockpit to be used to compile programs in containers and monitor the progress.
