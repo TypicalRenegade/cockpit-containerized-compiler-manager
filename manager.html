@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
     <title>Compiling Container Manager</title>
+    <meta charset="utf-8">
     <link href="manager.css" type="text/css" rel="stylesheet">
     <script src="../base1/cockpit.js"></script>
+    <script type="module" src="long-running-process.js"></script>
     <script type="module" src="manager.js"></script>
   </head>
   <body>
@@ -12,13 +13,14 @@
       <section>
         <div>
           <div>
-            <label>Veloren</label>
+            <label>Compile Veloren</label>
             <div>
               <label for="state">State:</label>
-              <span is="state"></span></p>
+              <span id="state"></span></p>
             </div>
             <div>
               <!-- Do I want to have an option of what to do? (e.g. fetch or clone program source, build, build for windows or linux) -->
+              <input id="command" type="text" />
               <button id="run" disabled>Start</button>
             </div>
             <pre id="output"></pre>
@@ -29,8 +31,5 @@
         </div>
       </section>
     </main>
-
-    <script src="manager.js"></script>
-    <footer></footer>
   </body>
 </html>

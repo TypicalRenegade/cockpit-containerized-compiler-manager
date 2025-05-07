@@ -521,12 +521,13 @@ const default_command = "\
     cd /srv;\
     if test -d ./veloren;\
     then\
+        cd ./veloren;\
         git fetch https://github.com/veloren/veloren.git; \
     else \
         git clone https://github.com/veloren/veloren.git; \
+        cd ./veloren; \
     fi;\
-    mv ./veloren ./linux-veloren;\
-    cd ./veloren; \
+    cp -r ./veloren ./linux-veloren;\
     cross build --target x86_64-pc-windows-gnu --release;\
     cd ..;\
     cd ./linux-veloren;\
