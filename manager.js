@@ -519,18 +519,18 @@ let state, command, run_button, output;
 //  build using cross for both windows and linux
 const default_command = "\
     cd /srv;\
-    if test -d ./veloren;\
+    if test -d /srv/veloren;\
     then\
-        cd ./veloren;\
+        cd /srv/veloren;\
         git fetch https://github.com/veloren/veloren.git; \
     else \
         git clone https://github.com/veloren/veloren.git; \
-        cd ./veloren; \
+        cd /srv/veloren; \
     fi;\
-    cp -r ./veloren ./linux-veloren;\
+    cp -r /srv/veloren /srv/linux-veloren;\
     cross build --target x86_64-pc-windows-gnu --release;\
     cd ..;\
-    cd ./linux-veloren;\
+    cd /srv/linux-veloren;\
     cross build --target x86_64-unknown-linux-gnu --release";
     // Store script in a separate file?
     // Add if for local repo is upto date, don't recompile veloren
