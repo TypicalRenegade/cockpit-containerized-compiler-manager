@@ -511,27 +511,27 @@
 import { LongRunningProcess, ProcessState } from './long-running-process.js';
 
 // DOM objects
-let state, command, run_button, output;
+let state, command, run_button, output, final_command, clone_or_fetch_veloren, compile_for_windows, compile_for_linux;
 
 // default shell command for the long-running process to run
 // Jobs:
 //  clone or fetch veloren (depending on if it exists)
 //  build using cross for both windows and linux
-const default_command = "\
-    cd /srv;\
-    if test -d /srv/veloren;\
-    then\
-        cd /srv/veloren;\
-        git fetch https://github.com/veloren/veloren.git; \
-    else \
-        git clone https://github.com/veloren/veloren.git; \
-        cd /srv/veloren; \
-    fi;\
-    cp -r /srv/veloren /srv/linux-veloren;\
-    cross build --target x86_64-pc-windows-gnu --release;\
-    cd ..;\
-    cd /srv/linux-veloren;\
-    cross build --target x86_64-unknown-linux-gnu --release";
+const default_command = "cd /srv;\
+"; //\
+    //if test -d /srv/veloren;\
+    //then\
+    //    cd /srv/veloren;\
+    //    git fetch https://github.com/veloren/veloren.git; \
+    //else \
+    //    git clone https://github.com/veloren/veloren.git; \
+    //    cd /srv/veloren; \
+    //fi;\
+    //cp -r /srv/veloren /srv/linux-veloren;\
+    //cross build --target x86_64-pc-windows-gnu --release;\
+    //cd ..;\
+    //cd /srv/linux-veloren;\
+    //cross build --target x86_64-unknown-linux-gnu --release";
     // Store script in a separate file?
     // Add if for local repo is upto date, don't recompile veloren
 
@@ -550,7 +550,7 @@ function showJournal(unitName, filter_arg) {
     const argv = ["journalctl", "--output=cat", "--unit", unitName, "--follow", "--lines=all", filter_arg];
     showJournal.journalctl = cockpit.spawn(argv, { superuser: "require", err: "message" })
     .stream(data => output.append(document.createTextNode(data)))
-    .catch(ex => { output.textContent = JSON.stringify(ex) });
+    .catch(ex => { output.textContent = JSON.stringify(ex); });
 }
 
 function update(process) {
@@ -578,7 +578,21 @@ function update(process) {
         default:
             throw new Error("unexpected process.state: " + process.state);
     }
+
+    if (clone_or_fetch_veloren.clicked || compile_for_windows.clicked || compile_for_linux) {
+        run_button.removeAttribute("disabled");
+    } else {
+        run_button.setAttribute("disabled", "");
+    }
+
 }
+
+//function string_included(string, test_string, remove_string) {
+//    if string.includes(test_string);
+//    if (remove_string) {
+//        string.
+//    }
+//}
 
 // called once after page initializes; set up the page
 cockpit.transport.wait(() => {
@@ -586,9 +600,13 @@ cockpit.transport.wait(() => {
     command = document.getElementById("command");
     run_button = document.getElementById("run");
     output = document.getElementById("output");
+    clone_or_fetch_veloren = document.getElementById("clone_or_fetch_veloren");
+    compile_for_windows = document.getElementById("compile_for_windows");
+    compile_for_linux = document.getElementById("compile_for_linux");
 
-    command.value = default_command;
-
+    final_command = default_command;
+    command.value = final_command;
+    document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
     /* Build a service name which contains exactly the identifying properties for the
      * command to re-attach to. For a single static command this is just the page name,
      * but it could also include the command name or path, arguments, or a playbook name,
@@ -601,14 +619,87 @@ cockpit.transport.wait(() => {
     /* Start process on clicking the "Start" button
      * This runs as root, thus will be shared with all privileged Cockpit sessions.
      */
+    clone_or_fetch_veloren.addEventListener('change', event => {
+        if (event.target.checked === true) {
+            run_button.removeAttribute("disabled");
+
+            final_command = final_command.replace(default_command, default_command + clone_or_fetch_veloren.value)
+            //final_command += clone_or_fetch_veloren.value;
+            command.value = final_command;
+            document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+
+        } else if (event.target.checked === false) {
+            final_command = final_command.replace(clone_or_fetch_veloren.value, "");
+            command.value = final_command;
+            document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+
+            if (compile_for_windows.checked || compile_for_linux.checked) {
+                run_button.removeAttribute("disabled");
+            } else {
+                run_button.setAttribute("disabled", "");
+            }
+        }
+    });
+    compile_for_windows.addEventListener('change', event => {
+        if (event.target.checked === true) {
+            run_button.removeAttribute("disabled");
+
+            final_command += compile_for_windows.value;
+            command.value = final_command;
+            document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+
+        } else if (event.target.checked === false) {
+            final_command = final_command.replace(compile_for_windows.value, "");
+            command.value = final_command;
+            document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+
+            if (clone_or_fetch_veloren.checked || compile_for_linux.checked) {
+                run_button.removeAttribute("disabled");
+            } else {
+                run_button.setAttribute("disabled", "");
+            }
+        }
+    });
+    compile_for_linux.addEventListener('change', event => {
+        if (event.target.checked === true) {
+            run_button.removeAttribute("disabled");
+
+            final_command += compile_for_linux.value;
+            command.value = final_command;
+            document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+        } else if (event.target.checked === false) {
+            final_command = final_command.replace(compile_for_linux.value, "");
+            command.value = final_command;
+            document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+
+            if (clone_or_fetch_veloren.checked || compile_for_windows.checked) {
+                run_button.removeAttribute("disabled");
+            } else {
+                run_button.setAttribute("disabled", "");
+            }
+        }
+    });
     run_button.addEventListener("click", () => {
         if (process.state === ProcessState.RUNNING)
             process.terminate();
+        //else if (process.state === ProcessState.FAILED)
+          //  process.
         else
             process.run(["/bin/sh", "-ec", command.value])
             .catch(ex => {
                 state.textContent = "Error: " + ex.toString();
                 run_button.setAttribute("disabled", "");
             });
+    });
+});
+
+
+document.querySelectorAll("textarea").forEach(function(textarea) {
+    textarea.style.height = textarea.scrollHeight + "px";
+    textarea.style.overflowY = "hidden";
+
+    textarea.addEventListener("input", function() {
+        this.style.height = "auto";
+        this.style.height = this.scrollHeight + "px";
     });
 });

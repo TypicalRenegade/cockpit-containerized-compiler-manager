@@ -17,10 +17,28 @@
             <div>
               <label for="state">State:</label>
               <span id="state"></span></p>
+              <input type="checkbox" id="clone_or_fetch_veloren" name="Clone or Update Veloren" value="\
+if test -d /srv/veloren;\
+then\
+  cd /srv/veloren;\
+  git fetch https://github.com/veloren/veloren.git; \
+else \
+  git clone https://github.com/veloren/veloren.git; \
+  cd /srv/veloren;\
+cp -r /srv/veloren /srv/linux-veloren;">
+              <label for="clone_or_fetch_veloren"> Clone or Update Veloren</label><br>
+              <input type="checkbox" id="compile_for_windows" name="Compile Veloren for Windows" value="\
+cd /srv/veloren;\
+cross build --target x86_64-pc-windows-gnu --release;">
+              <label for="compile_for_windows"> Compile Veloren for Windows</label><br>
+              <input type="checkbox" id="compile_for_linux" name="Compile Veloren for Linux" value="\
+cd /srv/linux-veloren;\
+cross build --target x86_64-unknown-linux-gnu --release;">
+              <label for="compile_for_linux"> Compile Veloren for Linux</label><br>
             </div>
             <div>
               <!-- Do I want to have an option of what to do? (e.g. fetch or clone program source, build, build for windows or linux) -->
-              <input id="command" type="text" />
+              <textarea id="command" rows="2" cols = "10" wrap="soft"> </textarea>
               <button id="run" disabled>Start</button>
             </div>
             <pre id="output"></pre>
