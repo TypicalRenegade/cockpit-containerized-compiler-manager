@@ -688,7 +688,11 @@ cockpit.transport.wait(() => {
             process.run(["/bin/sh", "-ec", command.value])
             .catch(ex => {
                 state.textContent = "Error: " + ex.toString();
-                run_button.setAttribute("disabled", "");
+                if (clone_or_fetch_veloren.checked || compile_for_windows.checked || compile_for_linux.checked) {
+                    run_button.removeAttribute("disabled");
+                } else {
+                    run_button.setAttribute("disabled", "");
+                }
             });
     });
 });
