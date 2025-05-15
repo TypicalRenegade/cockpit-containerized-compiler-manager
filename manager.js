@@ -509,9 +509,15 @@
 /* global cockpit */
 
 import { LongRunningProcess, ProcessState } from './long-running-process.js';
+/*import React from 'react';
+import { createRoot } from 'react-dom/client';
+import "cockpit-dark-theme";
+
+import "patternfly/patternfly-6-cockpit.scss";
+import './manager.css'; */
 
 // DOM objects
-let state, command, run_button, output, final_command, clone_or_fetch_veloren, compile_for_windows, compile_for_linux;
+let state, command, run_button, output, final_command, clone_or_fetch_veloren, compile_for_windows, compile_for_linux, run_linux_server;
 
 // default shell command for the long-running process to run
 // Jobs:
@@ -553,6 +559,14 @@ function showJournal(unitName, filter_arg) {
     .catch(ex => { output.textContent = JSON.stringify(ex); });
 }
 
+function boxes_checked() {
+    if (clone_or_fetch_veloren.checked || compile_for_windows.checked || compile_for_linux.checked || run_linux_server.checked) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function update(process) {
     state.textContent = cockpit.format("$0 $1", process.serviceName, process.state);
 
@@ -560,7 +574,12 @@ function update(process) {
         case ProcessState.INIT:
             break;
         case ProcessState.STOPPED:
-            run_button.removeAttribute("disabled");
+            if (boxes_checked()) {
+                run_button.removeAttribute("disabled");
+            } else {
+                run_button.setAttribute("disabled", "");
+            }
+            //run_button.removeAttribute("disabled");
             run_button.textContent = "Start";
             break;
         case ProcessState.RUNNING:
@@ -570,8 +589,9 @@ function update(process) {
             showJournal(process.serviceName, "--since=@" + Math.floor(process.startTimestamp / 1000000));
             break;
         case ProcessState.FAILED:
-            run_button.setAttribute("disabled", "");
-            run_button.textContent = "Start";
+            run_button.removeAttribute("disabled");
+            //run_button.setAttribute("disabled", "");
+            run_button.textContent = "Reset";
             // Show the whole journal of this boot
             showJournal(process.serviceName, "--boot");
             break;
@@ -579,13 +599,15 @@ function update(process) {
             throw new Error("unexpected process.state: " + process.state);
     }
 
-    if (clone_or_fetch_veloren.clicked || compile_for_windows.clicked || compile_for_linux) {
-        run_button.removeAttribute("disabled");
-    } else {
-        run_button.setAttribute("disabled", "");
-    }
+    //if (clone_or_fetch_veloren.clicked || compile_for_windows.clicked || compile_for_linux.clicked) {
+        //run_button.removeAttribute("disabled");
+    //} else {
+        //run_button.setAttribute("disabled", "");
+//    }
 
 }
+
+
 
 //function string_included(string, test_string, remove_string) {
 //    if string.includes(test_string);
@@ -603,6 +625,7 @@ cockpit.transport.wait(() => {
     clone_or_fetch_veloren = document.getElementById("clone_or_fetch_veloren");
     compile_for_windows = document.getElementById("compile_for_windows");
     compile_for_linux = document.getElementById("compile_for_linux");
+    run_linux_server = document.getElementById("run_linux_server");
 
     final_command = default_command;
     command.value = final_command;
@@ -633,7 +656,7 @@ cockpit.transport.wait(() => {
             command.value = final_command;
             document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
 
-            if (compile_for_windows.checked || compile_for_linux.checked) {
+            if (boxes_checked()) {
                 run_button.removeAttribute("disabled");
             } else {
                 run_button.setAttribute("disabled", "");
@@ -653,7 +676,7 @@ cockpit.transport.wait(() => {
             command.value = final_command;
             document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
 
-            if (clone_or_fetch_veloren.checked || compile_for_linux.checked) {
+            if (boxes_checked()) {
                 run_button.removeAttribute("disabled");
             } else {
                 run_button.setAttribute("disabled", "");
@@ -672,27 +695,42 @@ cockpit.transport.wait(() => {
             command.value = final_command;
             document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
 
-            if (clone_or_fetch_veloren.checked || compile_for_windows.checked) {
+            if (boxes_checked()) {
                 run_button.removeAttribute("disabled");
             } else {
                 run_button.setAttribute("disabled", "");
             }
         }
     });
+    run_linux_server.addEventListener('change', event => {
+       if (event.target.checked === true)  {
+           run_button.removeAttribute("disabled");
+
+           final_command += run_linux_server.value;
+           command.value = final_command;
+           document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+       } else if (event.target.checked === false) {
+           final_command = final_command.replace(run_linux_server.value, "");
+           command.value = final_command;
+           document.querySelectorAll("textarea").forEach(t => t.dispatchEvent(new Event('input', { bubbles: true, cancelable: true })));
+
+           if (boxes_checked()) {
+               run_button.removeAttribute("disabled");
+           } else {
+               run_button.setAttribute("disabled", "");
+           }
+       }
+    });
     run_button.addEventListener("click", () => {
         if (process.state === ProcessState.RUNNING)
             process.terminate();
-        //else if (process.state === ProcessState.FAILED)
-          //  process.
+        else if (process.state === ProcessState.FAILED)
+            process.reset();
         else
             process.run(["/bin/sh", "-ec", command.value])
             .catch(ex => {
                 state.textContent = "Error: " + ex.toString();
-                if (clone_or_fetch_veloren.checked || compile_for_windows.checked || compile_for_linux.checked) {
-                    run_button.removeAttribute("disabled");
-                } else {
-                    run_button.setAttribute("disabled", "");
-                }
+                run_button.setAttribute("disabled", "");
             });
     });
 });

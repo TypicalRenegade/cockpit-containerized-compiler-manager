@@ -3,10 +3,12 @@
   <head>
     <title>Compiling Container Manager</title>
     <meta charset="utf-8">
-    <link href="manager.css" type="text/css" rel="stylesheet">
+    <!-- <link href="manager.css" type="text/css" rel="stylesheet"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="../base1/cockpit.js"></script>
     <script type="module" src="long-running-process.js"></script>
     <script type="module" src="manager.js"></script>
+    <title>Compiling Manager</title>
   </head>
   <body>
     <main tabindex="-1">
@@ -21,20 +23,30 @@
 if test -d /srv/veloren;\
 then\
   cd /srv/veloren;\
-  git fetch https://github.com/veloren/veloren.git; \
-else \
-  git clone https://github.com/veloren/veloren.git; \
+  git fetch https://github.com/veloren/veloren.git;\
+else\
+  git clone https://github.com/veloren/veloren.git;\
   cd /srv/veloren;\
-cp -r /srv/veloren /srv/linux-veloren;">
+fi;">
               <label for="clone_or_fetch_veloren"> Clone or Update Veloren</label><br>
               <input type="checkbox" id="compile_for_windows" name="Compile Veloren for Windows" value="\
 cd /srv/veloren;\
-cross build --target x86_64-pc-windows-gnu --release;">
+cargo build --release --target x86_64-pc-windows-gnu;">
+<!-- cross building doesn't seem to work with compiling veloren. So should I make buttons for how rust programs are compiled? -->
+<!-- KG_CONFIG_SYSROOT_DIR=Z cargo build --release --target x86_64-pc-windows-gnu;"> -->
+<!-- cross build --target x86_64-pc-windows-msvc --release;"> -->
+
               <label for="compile_for_windows"> Compile Veloren for Windows</label><br>
               <input type="checkbox" id="compile_for_linux" name="Compile Veloren for Linux" value="\
-cd /srv/linux-veloren;\
-cross build --target x86_64-unknown-linux-gnu --release;">
+cd /srv/veloren;\
+cargo build --release;">
+<!-- cross build --target x86_64-unknown-linux-gnu --release;"> -->
+
               <label for="compile_for_linux"> Compile Veloren for Linux</label><br>
+              <input type="checkbox" id="run_linux_server" name="Run Veloren Server" value="\
+cd /srv/veloren;\
+cargo run --bin veloren-server-cli --release;">
+              <label for="run_linux_server"> Run Veloren Server</label><br>
             </div>
             <div>
               <!-- Do I want to have an option of what to do? (e.g. fetch or clone program source, build, build for windows or linux) -->
